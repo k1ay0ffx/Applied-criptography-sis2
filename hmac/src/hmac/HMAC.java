@@ -1,6 +1,6 @@
-package hmac.src;
+package hmac;
 
-import sha256.scr.SHA256;
+import sha256.SHA256;
 
 /**
  * HMAC (Hash-based Message Authentication Code) Implementation
