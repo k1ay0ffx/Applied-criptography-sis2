@@ -320,17 +320,15 @@ public class AppConsole {
 
     private void runHMACVectors() {
         System.out.println("\n── HMAC-SHA256 Test Vectors (RFC 4231) ──");
-        // FIX: was Hmac.fromHex → HMAC.fromHex
         byte[] k1 = HMAC.fromHex("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b");
         byte[] m1 = "Hi There".getBytes(StandardCharsets.UTF_8);
-        // FIX: was hmac.computeHex — instance method now exists
         check("HMAC-1", hmac.computeHex(k1, m1),
             "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7");
 
         byte[] k2 = "Jefe".getBytes(StandardCharsets.UTF_8);
         byte[] m2 = "what do ya want for nothing?".getBytes(StandardCharsets.UTF_8);
         check("HMAC-2", hmac.computeHex(k2, m2),
-            "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964a72424");
+            "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843");
 
         byte[] k3 = HMAC.fromHex(
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
@@ -346,10 +344,9 @@ public class AppConsole {
 
     private void runPBKDF2Vectors() {
         System.out.println("\n── PBKDF2-HMAC-SHA256 Test Vectors ──");
-        // FIX: was pbkdf2.deriveHex — instance method now exists
         check("PBKDF2-1 (iter=1, len=20)",
             pbkdf2.deriveHex("password", "salt", 1, 20),
-            "120fb6cffccd202497978ad05fc7f1dcbf5a");
+            "120fb6cffcf8b32c43e7225256c4f837a86548c9");
         check("PBKDF2-2 (iter=2, len=20)",
             pbkdf2.deriveHex("password", "salt", 2, 20),
             "ae4d0c95af6b46d32d0adff928f06dd02a303f8e");
