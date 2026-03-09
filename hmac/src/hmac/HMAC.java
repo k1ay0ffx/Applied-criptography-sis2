@@ -17,7 +17,6 @@ public class HMAC {
         @Override public int getOutputSize()       { return 32; }
     }
 
-    // FIX 1: wrong method name was SHA512.Hash() — corrected to SHA512.hash()
     public static class SHA512HashFunction implements HashFunction {
         @Override public byte[] hash(byte[] data) { return sha512.SHA512.hash(data); }
         @Override public int getBlockSize()        { return 128; }
@@ -43,12 +42,10 @@ public class HMAC {
         return hashFunction.hash(concatenate(outerKey, innerHash));
     }
 
-    // FIX 2: new method — AppConsole calls hmac.computeHex(key, msg)
     public String computeHex(byte[] key, byte[] message) {
         return toHex(compute(key, message));
     }
 
-    // FIX 3: new method — AppConsole calls hmac.verifyHex(key, msg, hexTag)
     public boolean verifyHex(byte[] key, byte[] message, String expectedHex) {
         byte[] expected = fromHex(expectedHex);
         return verify(key, message, expected);
@@ -104,7 +101,7 @@ public class HMAC {
         return data;
     }
 
-    // FIX 4: getBytes() → getBytes(StandardCharsets.UTF_8) in convenience methods
+    //getBytes(StandardCharsets.UTF_8) in convenience methods
     public String computeString(String key, String message) {
         return toHex(compute(key.getBytes(StandardCharsets.UTF_8),
                              message.getBytes(StandardCharsets.UTF_8)));
