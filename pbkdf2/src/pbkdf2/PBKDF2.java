@@ -30,14 +30,20 @@ public class PBKDF2 {
         return derivedKey;
     }
 
-    // FIX 1: AppConsole calls derive(pwd, salt, iter, len) — 4 args, no hashType.
-    //        Add overload that defaults to SHA-256.
+    
+    /**
+     * Derives key using SHA-256 by default (no need to pass hashType).
+     * Shortcut for: derive(password, salt, iterations, dkLen, SHA256)
+     */
     public byte[] derive(byte[] password, byte[] salt, int iterations, int dkLen) {
         return derive(password, salt, iterations, dkLen, SHA256);
     }
 
-    // FIX 2: AppConsole calls pbkdf2.deriveHex(pwd, salt, iter, len).
-    //        Add instance method that accepts Strings and returns hex.
+    /**
+     * Derives key from plain string password and salt, returns hex string.
+     * Strings are encoded as UTF-8 internally before deriving.
+     * Useful for AppConsole where user types password as text.
+     */
     public String deriveHex(String password, String salt, int iterations, int dkLen) {
         return toHex(derive(
             password.getBytes(StandardCharsets.UTF_8),
