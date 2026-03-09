@@ -94,17 +94,21 @@ public class SHA256 {
     // ── Padding ───────────────────────────────────────────────────────────────
 
     private static byte[] padMessage(byte[] message) {
-        long bitLen = (long) message.length * 8;
-        int padLen  = 64 - ((message.length + 9) % 64);
-        if (padLen == 64) padLen = 0;
-        int total = message.length + 1 + padLen + 8;
-        byte[] padded = new byte[total];
-        System.arraycopy(message, 0, padded, 0, message.length);
-        padded[message.length] = (byte) 0x80;
-        for (int i = 0; i < 8; i++)
-            padded[total - 8 + i] = (byte)(bitLen >>> (56 - i * 8));
-        return padded;
+    long bitLen = (long) message.length * 8;
+    // Длина после добавления 0x80 и 8 байт длины — должна быть кратна 64
+    int totalLength = message.length + 1 + 8;
+    // Дополняем до кратного 64
+    if (totalLength % 64 != 0) {
+        totalLength += 64 - (totalLength % 64);
     }
+    byte[] padded = new byte[totalLength];
+    System.arraycopy(message, 0, padded, 0, message.length);
+    padded[message.length] = (byte) 0x80;
+    // Записываем длину в последние 8 байт
+    for (int i = 0; i < 8; i++)
+        padded[totalLength - 8 + i] = (byte)(bitLen >>> (56 - i * 8));
+    return padded;
+}
 
     // ── Compression ───────────────────────────────────────────────────────────
 
