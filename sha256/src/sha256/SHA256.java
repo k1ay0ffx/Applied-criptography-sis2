@@ -47,7 +47,7 @@ public class SHA256 {
         return toHex(hash(text));
     }
 
-    // ── Educational mode  (AppConsole: SHA256.intermediateState(txt)) ────────
+    // ── Educational mode
 
     public static String intermediateState(String text) {
         byte[] msg    = text.getBytes(StandardCharsets.UTF_8);
