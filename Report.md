@@ -134,158 +134,50 @@ Therefore, its security depends on the collision resistance and pseudorandomness
 
 
 
-
-```md
-## 5.1 SHA-512 Security Properties
-
-**Pre-image resistance:**  
-Given a hash `h`, it is computationally infeasible to find any `m` such that:
-
-```
-
-SHA-512(m) = h
-
-```
-
-The 512-bit output makes exhaustive search require **2^512 operations**.
-
-**Collision resistance:**  
-Finding any two distinct inputs `m₁ ≠ m₂` with the same hash requires approximately **2^256 operations** due to the birthday paradox.
-
-**Avalanche effect:**  
-A single bit change in the input cascades through the compression function to change approximately half of the output bits (128 of 256 visible bytes in hex).  
-This behavior was verified experimentally in the console application's **Functional Demo #2**.
-
-**Length extension attacks:**  
-SHA-512 (like SHA-256) is vulnerable to length extension attacks. Given `H(m)` and the length of `m`, an attacker can compute:
-
-```
-
-H(m || padding || m')
-
-```
-
-without knowing `m`.
-
-This is why **HMAC wraps SHA-256/512 with inner and outer key pads** instead of using a simple keyed hash.
-
----
-
-## 5.2 Argon2 Security Properties
-
-**Memory hardness:**  
-The large, configurable memory requirement means that an attacker cannot run many parallel guesses without a proportional increase in hardware cost.
-
-For example:
-
-- **64 MB per hash**
-- **10,000 parallel guesses → 640 GB RAM**
-
-**Time-memory trade-off (TMTO) resistance:**  
-Argon2id’s hybrid access pattern (data-independent in the first half, data-dependent in the second) forces attackers to hold the full memory state rather than recomputing blocks on demand.
-
-**Side-channel resistance:**  
-Argon2i uses data-independent addressing, meaning the memory access pattern reveals nothing about the password.  
-This protects against **cache-timing attacks on shared hardware**.
-
----
-
-# Section 6: Challenges and Lessons Learned
-
-### 1. Endianness discipline
-SHA-512 uses **big-endian 64-bit words**, while BLAKE2b uses **little-endian**.
-
-Mixing these up caused early test failures.
-
-The fix was to maintain separate helper methods:
-
-- `readBE64 / writeBE64` for SHA-512
-- `rle64 / wle64` for BLAKE2b
-
-with clear naming conventions.
-
----
-
-### 2. Java's signed 64-bit arithmetic
-Java does not provide an unsigned `long` type.
-
-All 64-bit arithmetic wraps silently (which is correct for cryptographic algorithms), but comparisons and division require:
-
-```
-
-Long.compareUnsigned
-Long.remainderUnsigned
-
-```
-
-These were needed particularly in:
-
-- the **Argon2 index-mapping formula**
-- the **BLAKE2b 128-bit counter**
-
----
-
-### 3. Argon2 index mapping
-The quadratic reference block distribution formula is subtle.
-
-The **RFC description** and the **reference C implementation** differ slightly in corner cases, particularly when:
-
-```
-
-idxInSeg == 0
-
-```
-
-and a different lane is referenced.
-
-Matching the official test vectors required careful reading of both sources.
-
----
-
-### 4. H' variable-length hash chaining
-An off-by-one error in the chain length:
-
-```
-
-r = ⌈τ / 32⌉ − 2
-
-```
-
-was easy to miscalculate.
-
-The solution was to **unit test the H' function independently** on boundary values:
-
-```
-
-τ = 32
-τ = 33
-τ = 64
-τ = 65
-τ = 1024
-
-```
-
-before integrating it into the Argon2 pipeline.
-
----
-
-### 5. BLAKE2b finalization flag
-The final block in BLAKE2b must set:
-
-```
-
-f[0] = 0xFFFF...FFFF
-
-```
-
-(all ones).
-
-A bug occurred when using `IV[6]` instead of `~IV[6]`.
-
-This produced incorrect digests only for **short, single-block inputs**.
-
-The issue was discovered using the **empty-string test vector**.
-```
-
-.
-
+5.1 SHA-512 Security Properties
+Pre-image resistance: Given a hash h, it is computationally infeasible to find
+any m such that SHA-512(m) = h. The 512-bit output makes exhaustive search
+require 2⁵¹² operations.
+Collision resistance: Finding any two distinct inputs m₁ ≠ m₂ with the same
+hash requires approximately 2²⁵⁶ operations by the birthday paradox.
+Avalanche effect: A single bit change in the input cascades through the
+compression function to change approximately half (128 of 256 visible bytes in
+hex) of the output bits. This was verified experimentally in the console
+application's Functional Demo #2.
+Length extension attacks: SHA-512 (like SHA-256) is vulnerable to length
+extension attacks: given H(m) and the length of m, an attacker can compute
+H(m ‖ padding ‖ m') without knowing m. This is why HMAC wraps SHA-256/512
+with inner and outer key pads rather than using a simple keyed hash.
+5.2 Argon2 Security Properties
+Memory hardness: The large, configurable memory requirement means that an
+attacker cannot run many parallel guesses without a proportional increase in
+hardware cost. At 64 MB per hash, running 10,000 parallel guesses requires 640 GB
+of RAM.
+Time-memory trade-off (TMTO) resistance: Argon2id's hybrid access pattern
+(data-independent in the first half, data-dependent in the second) forces
+attackers to actually hold the full memory state, rather than recomputing blocks
+on demand.
+Side-channel resistance: Argon2i's data-independent addressing means the
+memory access pattern reveals nothing about the password, protecting against
+cache-timing attacks on shared hardware.
+
+Section 6: Challenges and Lessons Learned
+1. Endianness discipline. SHA-512 uses big-endian 64-bit words; BLAKE2b uses
+little-endian. Mixing these up caused early test failures. The fix was to keep
+separate readBE64/writeBE64 helpers for SHA-512 and rle64/wle64 helpers
+for BLAKE2b, with clear naming conventions.
+2. Java's signed 64-bit arithmetic. Java has no unsigned long type. All 64-bit
+arithmetic wraps silently (which is correct), but comparisons and division require
+Long.compareUnsigned and Long.remainderUnsigned in some places, particularly
+in the Argon2 index-mapping formula and Blake2b's 128-bit counter.
+3. Argon2 index mapping. The quadratic reference block distribution formula is
+subtle. The RFC description and reference C implementation slightly differ in
+corner cases (when idxInSeg == 0 and a different lane is referenced). Careful
+reading of both sources was required to match the official test vectors.
+4. H' variable-length hash chaining. The off-by-one in the chain length
+(r = ⌈τ/32⌉ - 2) was easy to miscount. The fix was to unit-test H' independently
+on boundary values (τ = 32, 33, 64, 65, 1024) before integrating it.
+5. BLAKE2b finalization flag. The last block in BLAKE2b must set f[0] = 0xFFFF…
+(all ones). Forgetting to XOR with ~IV[6] instead of just IV[6] produced
+wrong digests only on short, single-block inputs — a subtle bug caught by the
+empty-string test vector.
