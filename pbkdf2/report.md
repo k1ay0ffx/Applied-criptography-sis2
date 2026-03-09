@@ -1,7 +1,7 @@
 
 ---
 
-# 5.X PBKDF2 Security Properties
+#PBKDF2 Security Properties
 
 **Password-based key strengthening:**
 PBKDF2 (Password-Based Key Derivation Function 2) is designed to convert a human password into a cryptographically strong key.
