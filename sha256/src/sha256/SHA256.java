@@ -1,4 +1,4 @@
-package sha256.scr;
+package sha256;
 
 public class SHA256 {
     
