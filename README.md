@@ -57,11 +57,11 @@ From the `app_console/` directory (or wherever all `src/` packages live together
 
 ```bash
 javac -d out -sourcepath src \
-  src/sha256/Sha256.java \
+  src/sha256/SHA256.java \
   src/sha512/SHA512.java \
-  src/hmac/Hmac.java \
-  src/pbkdf2/Pbkdf2.java \
-  src/hkdf/Hkdf.java \
+  src/hmac/HMAC.java \
+  src/pbkdf2/PBKDF2.java \
+  src/hkdf/HKDF.java \
   src/argon2/Blake2b.java \
   src/argon2/Argon2.java \
   src/appConsole/AppConsole.java \
