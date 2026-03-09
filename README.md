@@ -79,7 +79,7 @@ git clone https://github.com/k1ay0ffx/Applied-criptography-sis2.git
 cd Applied-criptography-sis2
 
 javac -d out $(find . -name "*.java")
-java java -cp out mainLogic.Main
+java -cp out mainLogic.Main
 ```
 
 You will see the main menu:
