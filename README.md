@@ -75,7 +75,8 @@ javac -d out -sourcepath src \
 ## Run
 
 ```bash
-java -cp out mainLogic.Main
+javac -d out $(find . -name "*.java")
+java java -cp out mainLogic.Main
 ```
 
 You will see the main menu:
