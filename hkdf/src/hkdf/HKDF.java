@@ -47,12 +47,23 @@ public class HKDF {
         return okm;
     }
 
-    // FIX: AppConsole calls hkdf.deriveKeyHex(ikm, salt, info, len) — instance method,
-    //      4 args (no hashType). Add overload defaulting to SHA-256.
+    
+        /**
+     * Derives key and returns result as hex string.
+     * Uses SHA-256 by default.
+     * @param ikm   input key material (raw bytes)
+     * @param salt  optional salt (raw bytes)
+     * @param info  context label (raw bytes)
+     * @param okmLen  desired output length in bytes
+     */
     public String deriveKeyHex(byte[] ikm, byte[] salt, byte[] info, int okmLen) {
         return toHex(deriveKey(ikm, salt, info, okmLen, SHA256));
     }
 
+    /**
+     * Same as above but accepts plain strings instead of byte arrays.
+     * Strings are encoded as UTF-8 internally before deriving.
+     */
     public String deriveKeyHex(String ikm, String salt, String info, int okmLen) {
         return toHex(deriveKey(
             ikm.getBytes(StandardCharsets.UTF_8),
