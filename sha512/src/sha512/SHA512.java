@@ -50,7 +50,7 @@ public final class SHA512 {
      * @param message raw input bytes
      * @return 64-byte digest
      */
-    public byte[] hash(byte[] message) {
+    public static byte[] hash(byte[] message) {
         byte[] padded = pad(message);
         long[] h = H_INIT.clone();
         long[] w = new long[80];
