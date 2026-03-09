@@ -83,7 +83,7 @@ You will see the main menu:
 ```
 ╔══════════════════════════════════════════════════════╗
 ║       Applied Cryptography — SIS2 Project            ║
-║  SHA-256 · SHA-512 · HMAC · PBKDF2 · HKDF · Argon2  ║
+║  SHA-256 · SHA-512 · HMAC · PBKDF2 · HKDF · Argon2   ║
 ╚══════════════════════════════════════════════════════╝
 
 ══════════════════════ MAIN MENU ══════════════════════
@@ -174,7 +174,7 @@ You will see the main menu:
 | PBKDF2-HMAC-SHA256 | RFC 8018 | Variable |
 | HKDF-SHA256 | RFC 5869 | Up to 8160 bytes |
 | Argon2id  | RFC 9106   | Variable |
-
+:
 ---
 
 ## Security Notes
